@@ -19,13 +19,15 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GreenAdapter.ListItemListener {
 
     private static final int NUM_LIST_ITEMS = 100;
 
     private GreenAdapter mAdapter;
     private RecyclerView mNumbersList;
+    private Toast toast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +42,20 @@ public class MainActivity extends AppCompatActivity {
 
         mNumbersList.setHasFixedSize(true);
 
-        mAdapter = new GreenAdapter(NUM_LIST_ITEMS);
+        mAdapter = new GreenAdapter(NUM_LIST_ITEMS,this);
 
         mNumbersList.setAdapter(mAdapter);
+    }
+
+    @Override
+    public void onListItemClicked(int listItemPosition) {
+
+        if(toast != null)
+        {
+            toast.cancel();
+        }
+
+        toast = Toast.makeText(this,String.valueOf(listItemPosition),Toast.LENGTH_LONG);
+        toast.show();
     }
 }

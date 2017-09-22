@@ -23,30 +23,26 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-/**
- * We couldn't come up with a good name for this class. Then, we realized
- * that this lesson is about RecyclerView.
- *
- * RecyclerView... Recycling... Saving the planet? Being green? Anyone?
- * #crickets
- *
- * Avoid unnecessary garbage collection by using RecyclerView and ViewHolders.
- *
- * If you don't like our puns, we named this Adapter GreenAdapter because its
- * contents are green.
- */
 public class GreenAdapter extends RecyclerView.Adapter<GreenAdapter.NumberViewHolder> {
+
 
     private static final String TAG = GreenAdapter.class.getSimpleName();
 
     private int mNumberItems;
+    int count;
+    ListItemListener itemListener;
 
-    public GreenAdapter(int numberOfItems) {
+    public GreenAdapter(int numberOfItems,ListItemListener itemListener) {
         mNumberItems = numberOfItems;
+        count = 0;
+        this.itemListener = itemListener;
     }
 
     @Override
     public NumberViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        String indexNumberView = "View Holder Index Number : ";
+        Log.d("onCreate","OnCreateViewHolder");
+        count++;
         Context context = viewGroup.getContext();
         int layoutIdForListItem = R.layout.number_list_item;
         LayoutInflater inflater = LayoutInflater.from(context);
@@ -54,6 +50,8 @@ public class GreenAdapter extends RecyclerView.Adapter<GreenAdapter.NumberViewHo
 
         View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
         NumberViewHolder viewHolder = new NumberViewHolder(view);
+
+        viewHolder.viewHolderIndexView.setText(indexNumberView.concat(String.valueOf(count)));
 
         return viewHolder;
     }
@@ -71,17 +69,32 @@ public class GreenAdapter extends RecyclerView.Adapter<GreenAdapter.NumberViewHo
     }
 
 
-    class NumberViewHolder extends RecyclerView.ViewHolder {
+    class NumberViewHolder extends RecyclerView.ViewHolder implements  View.OnClickListener{
 
         TextView listItemNumberView;
+        TextView viewHolderIndexView;
 
         public NumberViewHolder(View itemView) {
             super(itemView);
             listItemNumberView = (TextView) itemView.findViewById(R.id.tv_item_number);
+            viewHolderIndexView = (TextView) itemView.findViewById(R.id.index_number);
+            itemView.setOnClickListener(this);
         }
 
         void bind(int listIndex) {
+
             listItemNumberView.setText(String.valueOf(listIndex));
         }
+
+
+        @Override
+        public void onClick(View view) {
+            int clickedPosition = getAdapterPosition();
+            itemListener.onListItemClicked(clickedPosition);
+        }
+    }
+
+    public interface ListItemListener{
+        void onListItemClicked(int listItemPosition);
     }
 }
